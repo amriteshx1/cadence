@@ -1,5 +1,5 @@
 {
-  "name": "reachinbox-email-scheduler",
+  "name": "cadence",
   "private": true,
   "workspaces": [
     "backend",
