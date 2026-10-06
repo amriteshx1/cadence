@@ -102,13 +102,12 @@ export function LandingPage() {
             <a href="#execution" className="hover:text-white">Execution</a>
             <a href="#schedule" className="hover:text-white">Scheduling</a>
             <a href="#reliability" className="hover:text-white">Reliability</a>
-            <Link to="/dashboard" className="hover:text-white">Dashboard</Link>
           </nav>
           <Link
             to="/dashboard"
             className="ml-auto inline-flex h-9 items-center rounded-lg bg-brand px-3.5 text-sm font-medium text-page hover:bg-brand-hover md:ml-0"
           >
-            Open Dashboard
+            Get started
           </Link>
         </div>
       </header>
@@ -128,7 +127,7 @@ export function LandingPage() {
                   to="/dashboard"
                   className="inline-flex h-11 items-center rounded-lg bg-brand px-5 text-sm font-medium text-page hover:bg-brand-hover"
                 >
-                  Open Dashboard
+                  Get started
                 </Link>
                 <a href="#execution" className="text-sm font-medium text-ink underline-offset-4 hover:underline">
                   How execution works
@@ -289,7 +288,7 @@ export function LandingPage() {
               to="/dashboard"
               className="inline-flex h-11 items-center rounded-lg bg-brand px-5 text-sm font-medium text-page hover:bg-brand-hover"
             >
-              Open Dashboard
+              Get started
             </Link>
           </div>
         </section>
