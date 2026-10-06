@@ -38,7 +38,7 @@ export function LoginPage({ backendDown }: { backendDown?: boolean }) {
         <LoginTrace />
 
         <div className="w-full rounded-2xl border border-line bg-wash px-6 py-7">
-          <h2 className="font-sans text-lg font-semibold text-ink">Continue to ReachInbox</h2>
+          <h2 className="font-sans text-lg font-semibold text-ink">Continue to Cadence</h2>
           {backendDown ? (
             <p className="mt-4 rounded-lg bg-red-950/70 px-3 py-2 text-sm text-red-300" role="alert">
               The server is not responding. Try again in a moment.
