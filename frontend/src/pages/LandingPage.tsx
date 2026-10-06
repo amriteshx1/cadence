@@ -160,7 +160,7 @@ export function LandingPage() {
 
             <h3 className="mt-4 font-sans text-xl font-semibold tracking-[-0.02em]">Multiple workers. One shared state.</h3>
             <p className="mt-3 max-w-[64ch] text-sm leading-relaxed text-muted">
-              These constraints cannot live independently inside each worker. They need shared coordination. ReachInbox reserves capacity with an atomic Redis script, so two workers cannot spend the same slot. If this email already holds a permit, a retry does not increment the hour again.
+              These constraints cannot live independently inside each worker. They need shared coordination. Cadence reserves capacity with an atomic Redis script, so two workers cannot spend the same slot. If this email already holds a permit, a retry does not increment the hour again.
             </p>
             <CoordinationMap />
           </div>
@@ -299,7 +299,7 @@ function Trace({ kicker, lines }: { kicker: string; lines: string[] }) {
       <h3 className="font-sans text-base font-semibold">{kicker}</h3>
       <ol className="mt-4 border-l border-line">
         {lines.map((line) => (
-          <li key={line} className="py-2 pl-4 font-mono text-[12px] leading-snug text-[#c8c8c8]">
+          <li key={line} className="py-2 pl-4 font-mono text-[12px] leading-snug text-progress">
             {line}
           </li>
         ))}
