@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Database, Search, Server, Timer } from "lucide-react";
 import { Wordmark } from "../components/brand/Wordmark";
 import { ConstraintTimeline, CoordinationMap, ExecutionPlane, RestartMap } from "./systemVisuals";
 import "./public.css";
@@ -49,29 +48,31 @@ const steps = [
 
 const stores = [
   {
-    icon: Database,
     name: "PostgreSQL",
     role: "Source of truth",
     body: "Campaigns, emails, senders, and status live here. Scheduling and recovery read this record, not a worker's memory.",
   },
   {
-    icon: Server,
     name: "Redis",
     role: "Coordination and operational state",
     body: "Permits, hourly counters, the inter-send gap, and the SMTP receipt are shared so every worker sees the same constraints.",
   },
   {
-    icon: Timer,
     name: "BullMQ",
     role: "Persistent delayed execution",
     body: "The job waits in Redis until scheduledAt. There is no cron sweep. The delay is the schedule.",
   },
   {
-    icon: Search,
     name: "Elasticsearch",
     role: "Derived search index",
     body: "Search reads a projection of the email row. The send path still completes if indexing is slow or unavailable.",
   },
+];
+
+const limits = [
+  { value: "2000 ms", label: "Minimum gap between sends for one sender" },
+  { value: "200", label: "Emails per sender in a UTC hour" },
+  { value: "1000", label: "Emails across senders in that same hour" },
 ];
 
 const reference = [
@@ -146,10 +147,10 @@ export function LandingPage() {
             <p className="mt-3 max-w-[62ch] text-sm leading-relaxed text-muted">
               A send is not a request handler that calls SMTP. It is a persisted job that has to pass a shared gate, then survive a crash.
             </p>
-            <ol className="mt-8 max-w-3xl border-l border-line">
+            <ol className="mt-8 grid border-t border-line lg:grid-cols-2 lg:gap-x-12">
               {steps.map((step) => (
-                <li key={step.n} className="grid grid-cols-[3.5rem_1fr] gap-3 pb-7 pl-4">
-                  <span className="font-mono text-[12px] text-brand">{step.n}</span>
+                <li key={step.n} className="grid grid-cols-[2.5rem_1fr] gap-3 border-b border-line py-4">
+                  <span className="pt-0.5 font-mono text-[12px] text-muted">{step.n}</span>
                   <div>
                     <h3 className="font-sans text-base font-semibold">{step.title}</h3>
                     <p className="mt-1 text-sm leading-relaxed text-muted">{step.body}</p>
@@ -168,10 +169,22 @@ export function LandingPage() {
 
         <section id="schedule" className="scroll-mt-16 border-t border-line">
           <div className="mx-auto max-w-6xl px-5 py-16">
-            <h2 className="font-sans text-2xl font-semibold tracking-[-0.02em]">Scheduling under constraints</h2>
-            <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-muted">
-              A campaign is not one timestamp copied onto every address. At create time, slots are packed from the start time using the delay, mail already scheduled for that sender, and mail already scheduled globally. Defaults are 2000 ms between sends, 200 emails per sender each UTC hour, and 1000 globally. When the current hour is saturated, work is not dropped. The scheduler reserves capacity in a future time bucket. If a worker later finds the hour already spent, it does the same thing to that job: move scheduledAt forward and delay the existing BullMQ job.
-            </p>
+            <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-x-16">
+              <div>
+                <h2 className="font-sans text-2xl font-semibold tracking-[-0.02em]">Scheduling under constraints</h2>
+                <p className="mt-3 text-sm leading-relaxed text-muted">
+                  A campaign is not one timestamp copied onto every address. At create time, slots are packed from the start time using the delay, mail already scheduled for that sender, and mail already scheduled globally. When the current hour is saturated, work is not dropped. The scheduler reserves a later bucket. If a worker then finds that hour already spent, it moves scheduledAt forward and delays the same BullMQ job.
+                </p>
+              </div>
+              <dl className="grid gap-4 border-t border-line pt-4 lg:border-t-0 lg:border-l lg:pt-1 lg:pl-6">
+                {limits.map((item) => (
+                  <div key={item.value}>
+                    <dt className="font-sans text-sm font-semibold text-ink">{item.value}</dt>
+                    <dd className="mt-0.5 text-sm leading-snug text-muted">{item.label}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
             <ConstraintTimeline />
           </div>
         </section>
@@ -206,16 +219,16 @@ export function LandingPage() {
                 ]}
               />
             </div>
-            <div className="mt-8 grid gap-px overflow-hidden rounded-xl border border-line sm:grid-cols-2">
-              <div className="bg-wash px-4 py-4">
-                <h3 className="font-mono text-[12px] text-progress">Transient failure</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">
+            <div className="mt-8 grid border-t border-line lg:grid-cols-2 lg:gap-x-12">
+              <div className="border-b border-line py-4 lg:border-b-0">
+                <h3 className="font-sans text-base font-semibold">Transient failure</h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted">
                   An SMTP error with no receipt releases the hourly permit and throws, so BullMQ retries. The row goes back to scheduled until the attempt budget is spent.
                 </p>
               </div>
-              <div className="bg-wash px-4 py-4">
-                <h3 className="font-mono text-[12px] text-danger">Permanent failure</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">
+              <div className="border-b border-line py-4 lg:border-b-0">
+                <h3 className="font-sans text-base font-semibold text-danger">Permanent failure</h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted">
                   When the attempt budget is spent, the row is marked failed. Reconciliation does not scan failed rows, so that job is not put back on the queue.
                 </p>
               </div>
@@ -235,13 +248,12 @@ export function LandingPage() {
             <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-muted">
               Operational coordination and canonical business state have different requirements, so they are intentionally separated.
             </p>
-            <div className="mt-8 grid gap-px overflow-hidden rounded-xl border border-line sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-8 grid border-t border-line sm:grid-cols-2 sm:gap-x-12">
               {stores.map((store) => (
-                <article key={store.name} className="bg-wash px-4 py-4">
-                  <store.icon size={16} strokeWidth={1.5} className="text-brand" aria-hidden />
-                  <h3 className="mt-3 font-mono text-[13px] text-ink">{store.name}</h3>
+                <article key={store.name} className="border-b border-line py-4">
+                  <h3 className="font-sans text-base font-semibold">{store.name}</h3>
                   <p className="mt-1 text-sm text-ink">{store.role}</p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">{store.body}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">{store.body}</p>
                 </article>
               ))}
             </div>
@@ -254,10 +266,10 @@ export function LandingPage() {
             <p className="mt-3 max-w-[62ch] text-sm leading-relaxed text-muted">
               Each piece is listed once. The rate limiter is the rules on Redis, not a second store. The scheduler writes times. BullMQ waits until those times.
             </p>
-            <dl className="mt-8 overflow-hidden rounded-xl border border-line">
+            <dl className="mt-8 border-t border-line">
               {reference.map((item) => (
-                <div key={item.name} className="grid gap-1 border-t border-line px-5 py-4 first:border-t-0 sm:grid-cols-[11.5rem_1fr] sm:items-baseline sm:gap-8">
-                  <dt className="font-mono text-[13px] text-ink">{item.name}</dt>
+                <div key={item.name} className="grid gap-1 border-b border-line py-4 sm:grid-cols-[11.5rem_1fr] sm:items-baseline sm:gap-8">
+                  <dt className="font-sans text-sm font-semibold text-ink">{item.name}</dt>
                   <dd className="text-sm leading-relaxed text-muted">{item.role}</dd>
                 </div>
               ))}
@@ -297,10 +309,11 @@ function Trace({ kicker, lines }: { kicker: string; lines: string[] }) {
   return (
     <article>
       <h3 className="font-sans text-base font-semibold">{kicker}</h3>
-      <ol className="mt-4 border-l border-line">
-        {lines.map((line) => (
-          <li key={line} className="py-2 pl-4 font-mono text-[12px] leading-snug text-progress">
-            {line}
+      <ol className="mt-3 border-t border-line">
+        {lines.map((line, i) => (
+          <li key={line} className="grid grid-cols-[1.5rem_1fr] gap-3 border-b border-line py-2.5 text-sm leading-snug">
+            <span className="text-muted">{i + 1}</span>
+            <span className="text-muted">{line}</span>
           </li>
         ))}
       </ol>
