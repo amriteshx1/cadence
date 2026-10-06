@@ -10,7 +10,7 @@ Host ports for Postgres and Redis are remapped so they do not collide with typic
 
 | Service | Host port | Notes |
 |---|---|---|
-| PostgreSQL 16 | `5433` | User/db `reachinbox` / `reachinbox` |
+| PostgreSQL 16 | `5433` | User and database match Compose `POSTGRES_USER` / `POSTGRES_DB` and `.env.example` `DATABASE_URL` |
 | Redis 7 (AOF) | `6380` | Persistence for queues, sessions, and rate-limit counters |
 | Elasticsearch 8 | `9200` | Security disabled in Compose; search falls back to Postgres if it is down |
 
