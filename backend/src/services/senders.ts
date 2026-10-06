@@ -37,7 +37,7 @@ export async function ensureSenders(userId: string): Promise<Sender[]> {
       data: {
         userId,
         label: `Sender ${i + 1}`,
-        fromName: `ReachInbox Sender ${i + 1}`,
+        fromName: `Cadence Sender ${i + 1}`,
         fromEmail: account.user,
         smtpHost: account.smtp.host,
         smtpPort: account.smtp.port,
