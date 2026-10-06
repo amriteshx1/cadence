@@ -1,4 +1,4 @@
-# ReachInbox
+# Cadence
 
 Full-stack email scheduler: accept campaign send requests, store them in PostgreSQL, schedule with **BullMQ delayed jobs** (no cron), send through **Ethereal SMTP**, and operate them from a React dashboard.
 
