@@ -10,7 +10,7 @@ const phases = [
 
 export function ExecutionPlane() {
   return (
-    <figure className="overflow-hidden rounded-2xl border border-line bg-wash">
+    <figure className="overflow-hidden rounded-lg border border-line bg-wash">
       <figcaption className="flex items-start justify-between gap-4 border-b border-line px-4 py-3">
         <div className="phase-stack min-w-36" aria-hidden>
           {phases.map(([id, state]) => (
@@ -42,7 +42,7 @@ export function ExecutionPlane() {
           </text>
 
           {[88, 124, 160, 196, 232].map((x) => (
-            <rect key={x} x={x - 3} y="66" width="6" height="12" rx="1" fill="#f2f2f2" />
+            <line key={x} x1={x} y1="67" x2={x} y2="77" stroke="#f2f2f2" strokeWidth="1.1" />
           ))}
           <text x="160" y="122" textAnchor="middle" fill="#8a8a8a" fontSize="11" fontFamily={type}>
             ready, 2s apart
@@ -52,7 +52,7 @@ export function ExecutionPlane() {
             waiting
           </text>
           <g>
-            <circle cx="286" cy="72" r="5" fill="none" stroke="#a3a3a3" />
+            <circle cx="286" cy="72" r="3.25" fill="none" stroke="#a3a3a3" strokeWidth="0.9" />
             <animateTransform
               className="motion-shift"
               attributeName="transform"
@@ -72,7 +72,7 @@ export function ExecutionPlane() {
           <Panel x={160} y={158} w={200} h={48} title="Scheduler" detail="assigns scheduledAt" />
           <line x1="260" y1="206" x2="260" y2="224" stroke="#2a2a2a" />
 
-          <rect x="120" y="224" width="280" height="150" rx="8" fill="#060606" stroke="#2a2a2a" />
+          <rect x="120" y="224" width="280" height="150" rx="8" fill="#060606" stroke="#2a2a2a" strokeWidth="0.75" />
           <text x="136" y="248" fill="#f2f2f2" fontSize="13" fontFamily={type}>
             Execution slots
           </text>
@@ -82,7 +82,7 @@ export function ExecutionPlane() {
           <SlotRow y={348} time="11:00:00" state="rescheduled" warn />
 
           <line x1="260" y1="374" x2="260" y2="392" stroke="#2a2a2a" />
-          <rect x="120" y="392" width="280" height="108" rx="8" fill="#060606" stroke="#2a2a2a" />
+          <rect x="120" y="392" width="280" height="108" rx="8" fill="#060606" stroke="#2a2a2a" strokeWidth="0.75" />
           <text x="136" y="416" fill="#f2f2f2" fontSize="13" fontFamily={type}>
             Rate gate
           </text>
@@ -101,7 +101,7 @@ export function ExecutionPlane() {
           </text>
 
           <path d="M260 500 V528 H96 V548" fill="none" stroke="#2a2a2a" />
-          <path className="pipe-pulse" d="M260 500 V548" fill="none" stroke="#f2f2f2" />
+          <path className="pipe-pulse" d="M260 500 V548" fill="none" stroke="#f2f2f2" strokeWidth="0.75" />
           <path d="M260 528 H424 V548" fill="none" stroke="#2a2a2a" />
 
           <Lane x={32} y={548} title="lane 01" detail="idle" />
@@ -109,7 +109,7 @@ export function ExecutionPlane() {
           <Lane x={360} y={548} title="lane 03" detail="idle" />
 
           <line x1="96" y1="598" x2="96" y2="620" stroke="#2a2a2a" />
-          <line className="pipe-pulse" x1="260" y1="598" x2="260" y2="620" stroke="#f2f2f2" />
+          <line className="pipe-pulse" x1="260" y1="598" x2="260" y2="620" stroke="#f2f2f2" strokeWidth="0.75" />
           <line x1="424" y1="598" x2="424" y2="620" stroke="#2a2a2a" />
 
           <Smtp x={32} y={620} />
@@ -138,7 +138,7 @@ function Panel({
 }) {
   return (
     <g>
-      <rect x={x} y={y} width={w} height={h} rx="8" fill="#060606" stroke="#2a2a2a" />
+      <rect x={x} y={y} width={w} height={h} rx="8" fill="#060606" stroke="#2a2a2a" strokeWidth="0.75" />
       <text x={x + 16} y={y + 20} fill="#f2f2f2" fontSize="13" fontFamily={type}>
         {title}
       </text>
@@ -166,16 +166,10 @@ function SlotRow({ y, time, state, warn }: { y: number; time: string; state: str
 function Lane({ x, y, title, detail, live }: { x: number; y: number; title: string; detail: string; live?: boolean }) {
   return (
     <g>
-      <rect
-        className={live ? "lane-live" : undefined}
-        x={x}
-        y={y}
-        width="128"
-        height="50"
-        rx="8"
-        fill={live ? "#1a1a1a" : "#060606"}
-        stroke="#2a2a2a"
-      />
+      <rect x={x} y={y} width="128" height="50" rx="8" fill={live ? "#1a1a1a" : "#060606"} stroke="#2a2a2a" strokeWidth="0.75" />
+      {live ? (
+        <rect className="lane-live" x={x} y={y} width="128" height="50" rx="8" fill="none" stroke="#f2f2f2" strokeWidth="0.75" />
+      ) : null}
       <text x={x + 14} y={y + 22} fill="#f2f2f2" fontSize="12" fontFamily={type}>
         {title}
       </text>
@@ -189,7 +183,7 @@ function Lane({ x, y, title, detail, live }: { x: number; y: number; title: stri
 function Smtp({ x, y }: { x: number; y: number }) {
   return (
     <g>
-      <rect x={x} y={y} width="128" height="40" rx="8" fill="#060606" stroke="#2a2a2a" />
+      <rect x={x} y={y} width="128" height="40" rx="8" fill="#060606" stroke="#2a2a2a" strokeWidth="0.75" />
       <text x={x + 14} y={y + 25} fill="#c8c8c8" fontSize="12" fontFamily={type}>
         Ethereal
       </text>
@@ -200,48 +194,45 @@ function Smtp({ x, y }: { x: number; y: number }) {
 export function ConstraintTimeline() {
   const ready = [72, 132, 192, 252, 312];
   return (
-    <div className="mt-8 overflow-x-auto rounded-2xl border border-line bg-wash">
-      <div className="flex justify-center px-4 py-6">
-      <svg viewBox="0 0 840 300" className="h-auto w-210 max-w-full" role="img" aria-label="Jobs packed into an hour, with overflow moved to the next hour">
-        <text x="24" y="36" fill="#8a8a8a" fontSize="12" fontFamily={type}>
+    <div className="mt-8 overflow-x-auto rounded-lg border border-line bg-wash">
+      <div className="flex justify-center px-4 py-5">
+      <svg viewBox="0 0 840 186" className="h-auto w-210 max-w-full" role="img" aria-label="Jobs packed into an hour, with overflow moved to the next hour">
+        <text x="24" y="20" fill="#8a8a8a" fontSize="12" fontFamily={type}>
           Current hour
         </text>
-        <text x="560" y="36" fill="#8a8a8a" fontSize="12" fontFamily={type}>
+        <text x="560" y="20" fill="#8a8a8a" fontSize="12" fontFamily={type}>
           Next hour
         </text>
-        <line x1="24" y1="64" x2="816" y2="64" stroke="#2a2a2a" />
-        <line x1="40" y1="56" x2="40" y2="72" stroke="#8a8a8a" />
-        <text x="40" y="88" textAnchor="middle" fill="#c8c8c8" fontSize="12" fontFamily={type}>
+        <line x1="24" y1="40" x2="816" y2="40" stroke="#2a2a2a" strokeWidth="0.75" />
+        <line x1="40" y1="34" x2="40" y2="46" stroke="#8a8a8a" strokeWidth="0.75" />
+        <text x="40" y="64" textAnchor="middle" fill="#c8c8c8" fontSize="12" fontFamily={type}>
           10:00
         </text>
-        <line x1="520" y1="56" x2="520" y2="72" stroke="#8a8a8a" />
-        <text x="520" y="88" textAnchor="middle" fill="#c8c8c8" fontSize="12" fontFamily={type}>
+        <line x1="520" y1="34" x2="520" y2="46" stroke="#8a8a8a" strokeWidth="0.75" />
+        <text x="520" y="64" textAnchor="middle" fill="#c8c8c8" fontSize="12" fontFamily={type}>
           11:00
         </text>
 
         {ready.map((x, i) => (
           <g key={x}>
-            <line x1={x} y1="64" x2={x} y2="150" stroke="#2a2a2a" />
-            <circle cx={x} cy="150" r="5" fill="#f2f2f2" />
-            <text x={x} y="176" textAnchor="middle" fill="#c8c8c8" fontSize="12" fontFamily={type}>
+            <line x1={x} y1="40" x2={x} y2="92" stroke="#2a2a2a" strokeWidth="0.75" />
+            <circle cx={x} cy="92" r="2.5" fill="#f2f2f2" />
+            <text x={x} y="112" textAnchor="middle" fill="#c8c8c8" fontSize="12" fontFamily={type}>
               {`job ${i + 1}`}
-            </text>
-            <text x={x} y="194" textAnchor="middle" fill="#c8c8c8" fontSize="11" fontFamily={type}>
-              ready
             </text>
           </g>
         ))}
-        <text x="192" y="230" textAnchor="middle" fill="#8a8a8a" fontSize="12" fontFamily={type}>
-          minimum spacing, 2000 ms
+        <text x="192" y="132" textAnchor="middle" fill="#8a8a8a" fontSize="11" fontFamily={type}>
+          ready, 2000 ms apart
         </text>
 
         <g>
-          <line x1="400" y1="64" x2="400" y2="150" stroke="#333333" />
-          <circle cx="400" cy="150" r="5" fill="none" stroke="#a3a3a3" />
-          <text x="400" y="176" textAnchor="middle" fill="#a3a3a3" fontSize="12" fontFamily={type}>
+          <line x1="400" y1="40" x2="400" y2="92" stroke="#333333" strokeWidth="0.75" />
+          <circle cx="400" cy="92" r="2.75" fill="none" stroke="#a3a3a3" strokeWidth="0.9" />
+          <text x="400" y="112" textAnchor="middle" fill="#a3a3a3" fontSize="12" fontFamily={type}>
             job 6
           </text>
-          <text x="400" y="194" textAnchor="middle" fill="#a3a3a3" fontSize="11" fontFamily={type}>
+          <text x="400" y="132" textAnchor="middle" fill="#a3a3a3" fontSize="11" fontFamily={type}>
             waiting
           </text>
           <animateTransform
@@ -256,16 +247,16 @@ export function ConstraintTimeline() {
         </g>
 
         <g>
-          <line x1="740" y1="64" x2="740" y2="150" stroke="#2a2a2a" strokeDasharray="3 4" />
-          <circle cx="740" cy="150" r="5" fill="none" stroke="#8a8a8a" />
-          <text x="740" y="176" textAnchor="middle" fill="#8a8a8a" fontSize="12" fontFamily={type}>
+          <line x1="740" y1="40" x2="740" y2="92" stroke="#2a2a2a" strokeWidth="0.75" strokeDasharray="2 3" />
+          <circle cx="740" cy="92" r="2.75" fill="none" stroke="#8a8a8a" strokeWidth="0.9" />
+          <text x="740" y="112" textAnchor="middle" fill="#8a8a8a" fontSize="12" fontFamily={type}>
             open slot
           </text>
         </g>
-        <text x="620" y="230" fill="#8a8a8a" fontSize="12" fontFamily={type}>
+        <text x="620" y="132" fill="#8a8a8a" fontSize="11" fontFamily={type}>
           future bucket
         </text>
-        <text x="24" y="274" fill="#8a8a8a" fontSize="12" fontFamily={type}>
+        <text x="24" y="164" fill="#8a8a8a" fontSize="12" fontFamily={type}>
           Saturated hour: the job moves. It is not dropped.
         </text>
       </svg>
@@ -276,27 +267,29 @@ export function ConstraintTimeline() {
 
 export function CoordinationMap() {
   return (
-    <div className="mt-8 overflow-x-auto rounded-2xl border border-line bg-wash">
-      <div className="flex justify-center px-4 py-6">
+    <div className="mt-8 overflow-x-auto rounded-lg border border-line bg-wash">
+      <div className="flex justify-center px-4 py-5">
       <svg viewBox="0 0 760 300" className="h-auto w-190 max-w-full" role="img" aria-label="Workers sharing one Redis rate gate">
         {["Worker A", "Worker B", "Worker C"].map((name, i) => (
           <g key={name}>
-            <rect x="24" y={28 + i * 72} width="150" height="52" rx="8" fill="#060606" stroke="#2a2a2a" />
+            <rect x="24" y={28 + i * 72} width="150" height="52" rx="8" fill="#060606" stroke="#2a2a2a" strokeWidth="0.75" />
             <text x="40" y={58 + i * 72} fill="#f2f2f2" fontSize="12" fontFamily={type}>
               {name}
             </text>
-            <path d={["M174 54 C212 54 236 110 250 118", "M174 126 H250", "M174 198 C212 198 236 142 250 134"][i]} fill="none" stroke="#2a2a2a" />
           </g>
         ))}
-        <rect x="250" y="82" width="180" height="88" rx="8" fill="#1a1a1a" stroke="#f2f2f2" />
+        <path d="M174 54 H212 V198" fill="none" stroke="#2a2a2a" strokeWidth="0.75" />
+        <path d="M174 126 H250" fill="none" stroke="#2a2a2a" strokeWidth="0.75" />
+        <path d="M174 198 H212" fill="none" stroke="#2a2a2a" strokeWidth="0.75" />
+        <rect x="250" y="82" width="180" height="88" rx="8" fill="#1a1a1a" stroke="#f2f2f2" strokeWidth="0.75" />
         <text x="266" y="116" fill="#f2f2f2" fontSize="13" fontFamily={type}>
           Redis
         </text>
         <text x="266" y="138" fill="#c8c8c8" fontSize="11" fontFamily={type}>
           shared state
         </text>
-        <line x1="430" y1="126" x2="490" y2="126" stroke="#f2f2f2" className="pipe-pulse" />
-        <rect x="490" y="28" width="240" height="196" rx="8" fill="#060606" stroke="#2a2a2a" />
+        <line x1="430" y1="126" x2="490" y2="126" stroke="#f2f2f2" strokeWidth="0.6" className="pipe-pulse" />
+        <rect x="490" y="28" width="240" height="196" rx="8" fill="#060606" stroke="#2a2a2a" strokeWidth="0.75" />
         <text x="508" y="60" fill="#f2f2f2" fontSize="13" fontFamily={type}>
           Rate gate
         </text>
@@ -315,10 +308,10 @@ export function CoordinationMap() {
         <text x="24" y="268" fill="#8a8a8a" fontSize="12" fontFamily={type}>
           Atomic reservation
         </text>
-        <text x="220" y="268" fill="#8a8a8a" fontSize="12" fontFamily={type}>
+        <text x="250" y="268" fill="#8a8a8a" fontSize="12" fontFamily={type}>
           Execution slot
         </text>
-        <text x="400" y="268" fill="#8a8a8a" fontSize="12" fontFamily={type}>
+        <text x="490" y="268" fill="#8a8a8a" fontSize="12" fontFamily={type}>
           Future bucket
         </text>
       </svg>
@@ -328,38 +321,43 @@ export function CoordinationMap() {
 }
 
 export function RestartMap() {
+  const before = ["Scheduled job", "Delayed queue", "Worker processing"];
+  const after = ["Persisted schedule", "Reconciliation", "Queue restored", "Worker resumes"];
   return (
-    <div className="mt-8 overflow-x-auto rounded-2xl border border-line bg-wash">
-      <div className="flex justify-center px-4 py-6">
-      <svg viewBox="0 0 760 300" className="h-auto w-190 max-w-full" role="img" aria-label="Schedule before a worker restart and after reconciliation">
-        <text x="24" y="32" fill="#8a8a8a" fontSize="12" fontFamily={type}>
+    <div className="mt-8 overflow-x-auto rounded-lg border border-line bg-wash">
+      <div className="flex justify-center px-4 py-5">
+      <svg viewBox="0 0 760 248" className="h-auto w-190 max-w-full" role="img" aria-label="Schedule before a worker restart and after reconciliation">
+        <text x="24" y="20" fill="#8a8a8a" fontSize="12" fontFamily={type}>
           Before restart
         </text>
-        <text x="500" y="32" fill="#8a8a8a" fontSize="12" fontFamily={type}>
+        <text x="436" y="20" fill="#8a8a8a" fontSize="12" fontFamily={type}>
           After restart
         </text>
-        {["Scheduled job", "Delayed queue", "Worker processing"].map((label, i) => (
+        <line x1="380" y1="40" x2="380" y2="108" stroke="#2a2a2a" strokeWidth="0.75" />
+        <text x="380" y="128" textAnchor="middle" fill="#8a8a8a" fontSize="11" fontFamily={type}>
+          stops
+        </text>
+        <line x1="380" y1="140" x2="380" y2="228" stroke="#2a2a2a" strokeWidth="0.75" />
+        {before.map((label, i) => (
           <g key={label}>
-            <rect x="24" y={52 + i * 58} width="220" height="42" rx="8" fill="#060606" stroke="#2a2a2a" />
-            <text x="40" y={78 + i * 58} fill="#f2f2f2" fontSize="12" fontFamily={type}>
+            <rect x="24" y={40 + i * 52} width="300" height="40" rx="4" fill="#060606" stroke="#2a2a2a" strokeWidth="0.75" />
+            <text x="40" y={64 + i * 52} fill="#8a8a8a" fontSize="12" fontFamily={type}>
+              {i + 1}
+            </text>
+            <text x="60" y={64 + i * 52} fill="#f2f2f2" fontSize="12" fontFamily={type}>
               {label}
             </text>
-            {i < 2 ? <line x1="134" y1={94 + i * 58} x2="134" y2={110 + i * 58} stroke="#2a2a2a" /> : null}
           </g>
         ))}
-        <text x="372" y="156" textAnchor="middle" fill="#f07171" fontSize="18" fontFamily={type}>
-          ×
-        </text>
-        <text x="372" y="176" textAnchor="middle" fill="#8a8a8a" fontSize="11" fontFamily={type}>
-          worker stops
-        </text>
-        {["Persisted schedule", "Reconciliation", "Queue restored", "Worker resumes"].map((label, i) => (
+        {after.map((label, i) => (
           <g key={label}>
-            <rect x="500" y={52 + i * 58} width="230" height="42" rx="8" fill="#060606" stroke="#2a2a2a" />
-            <text x="516" y={78 + i * 58} fill="#f2f2f2" fontSize="12" fontFamily={type}>
+            <rect x="436" y={40 + i * 48} width="300" height="40" rx="4" fill="#060606" stroke="#2a2a2a" strokeWidth="0.75" />
+            <text x="452" y={64 + i * 48} fill="#8a8a8a" fontSize="12" fontFamily={type}>
+              {i + 1}
+            </text>
+            <text x="472" y={64 + i * 48} fill="#f2f2f2" fontSize="12" fontFamily={type}>
               {label}
             </text>
-            {i < 3 ? <line x1="615" y1={94 + i * 58} x2="615" y2={110 + i * 58} stroke="#2a2a2a" /> : null}
           </g>
         ))}
       </svg>
