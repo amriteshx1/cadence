@@ -286,7 +286,7 @@ export function LandingPage() {
             </div>
             <Link
               to="/dashboard"
-              className="inline-flex h-11 items-center rounded-lg bg-brand px-5 text-sm font-medium text-page hover:bg-brand-hover"
+              className="inline-flex h-11 w-fit items-center self-start rounded-lg bg-brand px-5 text-sm font-medium text-page hover:bg-brand-hover sm:self-end"
             >
               Get started
             </Link>
