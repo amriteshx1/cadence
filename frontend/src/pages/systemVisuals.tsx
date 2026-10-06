@@ -253,7 +253,7 @@ export function ConstraintTimeline() {
             open slot
           </text>
         </g>
-        <text x="620" y="132" fill="#8a8a8a" fontSize="11" fontFamily={type}>
+        <text x="740" y="132" textAnchor="middle" fill="#8a8a8a" fontSize="11" fontFamily={type}>
           future bucket
         </text>
         <text x="24" y="164" fill="#8a8a8a" fontSize="12" fontFamily={type}>
