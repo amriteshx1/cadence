@@ -5,7 +5,8 @@ import { useAuth } from "../auth/AuthProvider";
 import { ComposeDialog } from "../components/emails/ComposeDialog";
 import { EmailTable } from "../components/emails/EmailTable";
 import { Header } from "../components/layout/Header";
-import { Sidebar } from "../components/layout/Sidebar";
+import { AppSidebar } from "../components/layout/Sidebar";
+import { SidebarInset, SidebarProvider } from "../components/ui/sidebar";
 import { Button } from "../components/ui/Button";
 import { EmptyState, ErrorState } from "../components/ui/EmptyState";
 import { TableSkeleton } from "../components/ui/Spinner";
@@ -117,21 +118,23 @@ export function DashboardPage() {
 
   if (!user) return null;
 
+  const sidebarProps = {
+    user,
+    tab,
+    scheduledCount: scheduledMeta.data?.total ?? 0,
+    sentCount: sentMeta.data?.total ?? 0,
+    onTab: setTab,
+    onCompose: () => setComposeOpen(true),
+    onLogout: () => void logout(),
+    slackConnected: Boolean(slack.data?.connected),
+    onSlack: connectSlack,
+    onDisconnectSlack: () => disconnect.mutate(),
+  };
+
   return (
-    <div className="flex min-h-screen bg-page">
-      <Sidebar
-        user={user}
-        tab={tab}
-        scheduledCount={scheduledMeta.data?.total ?? 0}
-        sentCount={sentMeta.data?.total ?? 0}
-        onTab={setTab}
-        onCompose={() => setComposeOpen(true)}
-        onLogout={() => void logout()}
-        slackConnected={Boolean(slack.data?.connected)}
-        onSlack={connectSlack}
-        onDisconnectSlack={() => disconnect.mutate()}
-      />
-      <div className="flex min-w-0 flex-1 flex-col">
+    <SidebarProvider>
+      <AppSidebar {...sidebarProps} />
+      <SidebarInset className="min-w-0">
         <Header
           query={query}
           onQuery={setQuery}
@@ -142,13 +145,9 @@ export function DashboardPage() {
           }}
         />
         {searching && emails.data?.source ? (
-          <p className="px-8 pt-2 text-xs text-muted">Search source: {emails.data.source}</p>
+          <p className="px-4 pt-2 text-xs text-muted sm:px-6 md:px-8">Search source: {emails.data.source}</p>
         ) : null}
-        {emails.isPending ? (
-          <div className="px-8">
-            <TableSkeleton />
-          </div>
-        ) : null}
+        {emails.isPending ? <TableSkeleton /> : null}
         {listError ? <ErrorState message={listError} onRetry={() => void emails.refetch()} /> : null}
         {!emails.isPending && !listError && items.length === 0 ? (
           <EmptyState
@@ -167,7 +166,7 @@ export function DashboardPage() {
           <>
             <EmailTable items={items} mode={tab} />
             {pages > 1 ? (
-              <div className="mt-4 flex items-center justify-end gap-2 px-8 pb-8 text-sm">
+              <div className="mt-4 flex flex-wrap items-center justify-end gap-2 px-4 pb-8 text-sm sm:px-6 md:px-8">
                 <Button variant="secondary" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
                   Previous
                 </Button>
@@ -181,7 +180,7 @@ export function DashboardPage() {
             ) : null}
           </>
         ) : null}
-      </div>
+      </SidebarInset>
       <ComposeDialog
         open={composeOpen}
         onClose={() => setComposeOpen(false)}
@@ -191,6 +190,6 @@ export function DashboardPage() {
           void queryClient.invalidateQueries({ queryKey: ["emails"] });
         }}
       />
-    </div>
+    </SidebarProvider>
   );
 }
