@@ -4,9 +4,13 @@ import { api, ApiError } from "../../lib/api";
 import { toDatetimeLocalValue } from "../../lib/format";
 import { isBlankBody } from "../../lib/html";
 import { parseLeadsPreview, type LeadsPreview } from "../../lib/parseLeads";
+import { ArrowLeft, Calendar, Clock, Paperclip, Upload } from "lucide-react";
 import { BodyEditor } from "./BodyEditor";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/Button";
-import { IconClock, IconPaperclip, IconUpload } from "../ui/Icons";
+import { Input } from "../ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Spinner } from "../ui/Spinner";
 import { useToast } from "../ui/ToastProvider";
 
@@ -295,94 +299,92 @@ export function ComposeDialog({ open, onClose, onScheduled }: Props) {
 
   return (
     <div className="fixed inset-0 z-40 overflow-y-auto bg-page">
-      <form id="compose-form" className="mx-auto min-h-full max-w-5xl px-8 py-5" onSubmit={onSubmit}>
-        <header className="mb-2 flex items-center justify-between border-b border-line pb-4">
-          <div className="flex items-center gap-3">
-            <button type="button" onClick={close} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-wash" aria-label="Back">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-            </button>
-            <h2 className="text-[17px] font-medium">Compose New Email</h2>
+      <form id="compose-form" className="mx-auto min-h-full max-w-5xl px-4 py-4 sm:px-8 sm:py-5" onSubmit={onSubmit}>
+        <header className="mb-2 flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <Button type="button" variant="ghost" className="!size-8 shrink-0 !rounded-full !px-0" onClick={close} aria-label="Back">
+              <ArrowLeft className="size-[18px]" />
+            </Button>
+            <h2 className="truncate text-[17px] font-medium">Compose New Email</h2>
           </div>
-          <div className="relative flex items-center gap-4">
-            <button type="button" className="relative text-brand" title="Attach leads" onClick={() => fileRef.current?.click()}>
-              <IconPaperclip />
+          <div className="flex items-center gap-3 sm:gap-4">
+            <Button type="button" variant="ghost" className="relative !size-8 !px-0 text-brand" title="Attach leads" aria-label="Attach leads" onClick={() => fileRef.current?.click()}>
+              <Paperclip className="size-[18px]" />
               {detected && detected.emails.length > 0 ? (
-                <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-semibold text-page">
+                <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-semibold text-page">
                   {detected.emails.length}
                 </span>
               ) : null}
-            </button>
-            <button type="button" className="text-brand" title="Schedule" onClick={() => setLaterOpen((v) => !v)}>
-              <IconClock />
-            </button>
-            <Button type="submit" variant="outline" pill disabled={create.isPending}>
-              {create.isPending ? <Spinner className="h-4 w-4" /> : null}
-              Send
             </Button>
-            {laterOpen ? (
-              <div className="absolute right-0 top-12 z-10 w-[320px] rounded-xl border border-line bg-wash p-4 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+            <Popover open={laterOpen} onOpenChange={setLaterOpen}>
+              <PopoverTrigger asChild>
+                <Button type="button" variant="ghost" className="!size-8 !px-0 text-brand" title="Schedule" aria-label="Schedule">
+                  <Clock className="size-[18px]" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
                 <h3 className="mb-3 text-sm font-semibold">Send Later</h3>
                 <label className="relative block">
                   <span className="sr-only">Pick date and time</span>
-                  <input
+                  <Input
                     type="datetime-local"
                     value={startAt}
                     onChange={(e) => setStartAt(e.target.value)}
-                    className="h-10 w-full rounded-lg border-0 bg-page px-3 pr-9 text-sm text-ink outline-none placeholder:text-muted focus:ring-2 focus:ring-brand/20"
+                    className="rounded-lg border-0 bg-page pr-9"
                   />
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted">
-                    <CalendarIcon />
+                  <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted">
+                    <Calendar className="size-4" />
                   </span>
                 </label>
                 <div className="mt-3 space-y-1">
                   {laterPresets().map((preset) => (
-                    <button
+                    <Button
                       key={preset.label}
                       type="button"
-                      className="block w-full rounded-md px-1 py-1.5 text-left text-sm text-ink hover:bg-page"
+                      variant="ghost"
+                      className="h-8 w-full justify-start px-2 font-normal"
                       onClick={() => setStartAt(preset.value)}
                     >
                       {preset.label}
-                    </button>
+                    </Button>
                   ))}
                 </div>
                 <div className="mt-4 flex justify-end gap-4">
-                  <button type="button" className="text-sm text-ink" onClick={() => setLaterOpen(false)}>
+                  <Button type="button" variant="ghost" className="h-8 px-2" onClick={() => setLaterOpen(false)}>
                     Cancel
-                  </button>
+                  </Button>
                   <Button type="button" variant="outline" pill size="sm" onClick={() => setLaterOpen(false)}>
                     Done
                   </Button>
                 </div>
-              </div>
-            ) : null}
+              </PopoverContent>
+            </Popover>
+            <Button type="submit" variant="outline" pill disabled={create.isPending}>
+              {create.isPending ? <Spinner className="h-4 w-4" /> : null}
+              Send
+            </Button>
           </div>
         </header>
 
-        <div className="grid grid-cols-[72px_1fr] items-center">
+        <div className="grid grid-cols-1 items-center sm:grid-cols-[4.5rem_minmax(0,1fr)]">
           <div className="py-3.5 text-sm text-muted">From</div>
           <div className="border-b border-line py-2.5">
-            <div className="relative inline-flex">
-              <select
-                value={selectedSenderId}
-                onChange={(e) => setSenderId(e.target.value)}
-                className="h-8 appearance-none rounded-full bg-wash py-0 pl-3 pr-8 text-sm text-ink outline-none"
-                disabled={sendersQuery.isPending}
-              >
+            <Select
+              value={selectedSenderId || undefined}
+              onValueChange={setSenderId}
+              disabled={sendersQuery.isPending || senders.length === 0}
+            >
+              <SelectTrigger className="w-fit max-w-full" aria-label="From">
+                <SelectValue placeholder={sendersQuery.isPending ? "Loading senders" : "Choose a sender"} />
+              </SelectTrigger>
+              <SelectContent>
                 {senders.map((sender) => (
-                  <option key={sender.id} value={sender.id}>
+                  <SelectItem key={sender.id} value={sender.id}>
                     {sender.label} · {sender.fromEmail}
-                  </option>
+                  </SelectItem>
                 ))}
-              </select>
-              <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-muted">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </span>
-            </div>
+              </SelectContent>
+            </Select>
           </div>
           <div className="py-3.5 text-sm text-muted">To</div>
           <div className="flex items-center gap-2 border-b border-line py-2.5">
@@ -394,69 +396,78 @@ export function ComposeDialog({ open, onClose, onScheduled }: Props) {
                   title="Click to edit"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => editChip(email)}
-                  className="rounded-full border border-brand/50 px-2.5 py-0.5 text-xs font-medium text-brand hover:bg-mint"
+                  className="max-w-full"
                 >
-                  {email}
+                  <Badge variant="sent" className="max-w-full border border-brand/50 bg-transparent text-brand hover:bg-accent">
+                    <span className="truncate">{email}</span>
+                  </Badge>
                 </button>
               ))}
               {extra > 0 ? (
-                <span className="rounded-full border border-brand/50 px-2.5 py-0.5 text-xs font-medium text-brand">+{extra}</span>
+                <Badge variant="sent" className="border border-brand/50 bg-transparent text-brand">
+                  +{extra}
+                </Badge>
               ) : null}
-              <input
+              <Input
                 ref={toInputRef}
                 value={draft}
                 onChange={onToChange}
                 onKeyDown={onToKeyDown}
                 placeholder={badgeEmails.length ? "Add another email" : "recipient@example.com"}
-                className="h-8 min-w-48 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted"
+                aria-label="To"
+                className="h-8 min-w-0 flex-1 rounded-none border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"
               />
             </div>
-            <button
+            <Button
               type="button"
-              className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-brand"
+              variant="ghost"
+              className="h-8 shrink-0 px-2 whitespace-nowrap text-brand"
               onClick={() => fileRef.current?.click()}
             >
-              <IconUpload /> Upload List
-            </button>
+              <Upload className="size-4" /> Upload List
+            </Button>
             <input ref={fileRef} type="file" accept=".csv,.txt,text/csv,text/plain" className="hidden" onChange={onFile} />
           </div>
           <div className="py-3.5 text-sm text-muted">Subject</div>
           <div className="border-b border-line py-2.5">
-            <input
+            <Input
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Subject"
               maxLength={500}
-              className="h-8 w-full bg-transparent text-sm text-ink outline-none placeholder:text-muted"
+              aria-label="Subject"
+              className="h-8 rounded-none border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"
             />
           </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-10 text-sm text-muted">
+        <div className="mt-4 flex flex-col items-start gap-3 text-sm text-muted sm:flex-row sm:flex-wrap sm:items-center sm:gap-10">
           <label className="inline-flex items-center gap-3">
             Delay between 2 emails
-            <input
+            <Input
               type="number"
               min={MIN_DELAY_SEC}
               value={delaySec}
               onChange={(e) => setDelaySec(Number(e.target.value))}
-              className="h-8 w-14 rounded-lg border-0 bg-wash text-center text-sm text-ink outline-none focus:ring-2 focus:ring-brand/20"
+              aria-label="Delay between 2 emails"
+              className="h-8 w-14 rounded-lg border-0 bg-wash px-1 text-center"
             />
           </label>
           <label className="inline-flex items-center gap-3">
             Hourly Limit
-            <input
+            <Input
               type="number"
               min={1}
               max={1000}
               value={hourlyLimit}
               onChange={(e) => setHourlyLimit(Number(e.target.value))}
-              className="h-8 w-14 rounded-lg border-0 bg-wash text-center text-sm text-ink outline-none focus:ring-2 focus:ring-brand/20"
+              aria-label="Hourly Limit"
+              className="h-8 w-14 rounded-lg border-0 bg-wash px-1 text-center"
             />
           </label>
         </div>
 
-        <div className="mt-5 rounded-2xl border border-line bg-wash px-5 pb-5 pt-4">
+        <div className="mt-5 rounded-2xl border border-line bg-wash px-3 pt-4 pb-5 sm:px-5">
           <BodyEditor value={body} onChange={setBody} />
         </div>
         <p className="mt-3 text-sm text-muted">
@@ -489,12 +500,4 @@ function laterPresets(): Array<{ label: string; value: string }> {
   ];
 }
 
-function CalendarIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <rect x="3" y="5" width="18" height="16" rx="2" />
-      <path d="M3 10h18M8 3v4M16 3v4" />
-    </svg>
-  );
-}
 
