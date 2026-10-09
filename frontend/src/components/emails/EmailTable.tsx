@@ -58,7 +58,7 @@ function MobileEmailRow({ item, mode }: { item: EmailItem; mode: Mode }) {
           <p className="text-[11px] text-muted-foreground">To</p>
           <StatusBadge status={item.status} time={mode === "scheduled" ? item.scheduledAt : undefined} />
         </div>
-        <p className="text-sm font-medium break-words">{item.toEmail}</p>
+        <p className="text-sm font-medium wrap-break-word">{item.toEmail}</p>
       </CardHeader>
       <CardContent className="pt-2">
         <p className="text-[11px] text-muted-foreground">Subject</p>
