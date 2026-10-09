@@ -303,13 +303,13 @@ export function ComposeDialog({ open, onClose, onScheduled }: Props) {
         <header className="mb-2 flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
           <div className="flex min-w-0 items-center gap-3">
             <Button type="button" variant="ghost" className="!size-8 shrink-0 !rounded-full !px-0" onClick={close} aria-label="Back">
-              <ArrowLeft className="size-[18px]" />
+              <ArrowLeft className="size-4.5" />
             </Button>
             <h2 className="truncate text-[17px] font-medium">Compose New Email</h2>
           </div>
           <div className="flex items-center gap-3 sm:gap-4">
             <Button type="button" variant="ghost" className="relative !size-8 !px-0 text-brand" title="Attach leads" aria-label="Attach leads" onClick={() => fileRef.current?.click()}>
-              <Paperclip className="size-[18px]" />
+              <Paperclip className="size-4.5" />
               {detected && detected.emails.length > 0 ? (
                 <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-semibold text-page">
                   {detected.emails.length}
@@ -319,7 +319,7 @@ export function ComposeDialog({ open, onClose, onScheduled }: Props) {
             <Popover open={laterOpen} onOpenChange={setLaterOpen}>
               <PopoverTrigger asChild>
                 <Button type="button" variant="ghost" className="!size-8 !px-0 text-brand" title="Schedule" aria-label="Schedule">
-                  <Clock className="size-[18px]" />
+                  <Clock className="size-4.5" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent>
