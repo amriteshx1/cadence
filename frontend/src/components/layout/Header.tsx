@@ -1,4 +1,7 @@
-import { IconFilter, IconRefresh, IconSearch } from "../ui/Icons";
+import { RefreshCw, Search } from "lucide-react";
+import { Button } from "../ui/Button";
+import { Input } from "../ui/input";
+import { SidebarTrigger } from "../ui/sidebar";
 
 type Props = {
   query: string;
@@ -8,24 +11,21 @@ type Props = {
 
 export function Header({ query, onQuery, onRefresh }: Props) {
   return (
-    <div className="flex items-center gap-3 border-b border-line px-8 py-5">
+    <div className="flex items-center gap-2 border-b border-line px-3 py-3 sm:gap-3 sm:px-6 md:px-4 md:py-4">
+      <SidebarTrigger aria-label="Toggle sidebar" />
       <label className="relative min-w-0 flex-1">
-        <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
-          <IconSearch />
-        </span>
-        <input
+        <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted" />
+        <Input
           value={query}
           onChange={(e) => onQuery(e.target.value)}
           placeholder="Search"
-          className="h-10 w-full rounded-full border border-line bg-wash pl-11 pr-4 text-sm text-ink outline-none placeholder:text-muted focus:ring-2 focus:ring-brand/30"
+          className="pl-10"
+          aria-label="Search"
         />
       </label>
-      <button type="button" className="flex h-10 w-10 items-center justify-center text-muted hover:text-ink" title="Filter" aria-label="Filter">
-        <IconFilter />
-      </button>
-      <button type="button" className="flex h-10 w-10 items-center justify-center text-muted hover:text-ink" title="Refresh" aria-label="Refresh" onClick={onRefresh}>
-        <IconRefresh />
-      </button>
+      <Button variant="ghost" className="!size-9 shrink-0 !px-0" title="Refresh" aria-label="Refresh" onClick={onRefresh}>
+        <RefreshCw className="size-4" />
+      </Button>
     </div>
   );
 }
