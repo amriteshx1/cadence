@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, type Response } from "express";
 import { randomUUID } from "node:crypto";
 import { env } from "../config/env";
 import { applySessionCookiePolicy, SESSION_COOKIE, SESSION_COOKIE_OPTIONS } from "../config/constants";
@@ -17,7 +17,7 @@ authRouter.get("/google", (req, res) => {
       res.status(500).json({ error: { code: "SESSION_ERROR", message: "Could not start login" } });
       return;
     }
-    res.redirect(googleAuthUrl(state));
+    continueToGoogle(res, googleAuthUrl(state));
   });
 });
 
@@ -73,3 +73,16 @@ authRouter.post(
     res.status(204).end();
   }),
 );
+
+/** 200 commits the API origin so the session cookie is stored before Google. */
+function continueToGoogle(res: Response, url: string) {
+  const scriptUrl = JSON.stringify(url).replace(/</g, "\\u003c");
+  const refreshUrl = url.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+  res
+    .status(200)
+    .set("Cache-Control", "no-store")
+    .type("html")
+    .send(
+      `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=${refreshUrl}"></head><body><script>location.replace(${scriptUrl})</script></body></html>`,
+    );
+}

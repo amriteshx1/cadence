@@ -28,14 +28,17 @@ describe("google oauth and session behavior", () => {
     expect(board.status).toBe(401);
   });
 
-  it("redirects Google login to the real OAuth authorize URL", async () => {
+  it("commits the session cookie before handing off to Google", async () => {
     const app = buildApp();
     const res = await request(app).get("/auth/google").redirects(0);
-    expect(res.status).toBe(302);
-    expect(res.headers.location).toContain("accounts.google.com");
-    expect(res.headers.location).toContain("client_id=");
-    expect(res.headers.location).toContain("openid");
-    expect(res.headers.location).toContain(encodeURIComponent(env.GOOGLE_CALLBACK_URL));
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toMatch(/html/);
+    expect(res.headers["cache-control"]).toContain("no-store");
+    expect(res.text).toContain("accounts.google.com");
+    expect(res.text).toContain("client_id=");
+    expect(res.text).toContain("openid");
+    expect(res.text).toContain(encodeURIComponent(env.GOOGLE_CALLBACK_URL));
+    expect(res.text).toContain("location.replace");
     expectSessionCookieHeader(res.headers["set-cookie"]?.[0] ?? "");
   });
 
