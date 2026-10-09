@@ -56,12 +56,13 @@ export function PageSpinner() {
 
 export function TableSkeleton({ rows = 6 }: { rows?: number }) {
   return (
-    <div className="divide-y divide-line">
+    <div className="flex flex-col gap-3 px-3 py-3 md:px-0">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex gap-4 px-8 py-4">
-          <div className="h-3.5 w-40 animate-pulse rounded bg-wash" />
-          <div className="h-3.5 w-28 animate-pulse rounded bg-wash" />
-          <div className="h-3.5 flex-1 animate-pulse rounded bg-wash" />
+        <div key={i} className="rounded-xl border border-line bg-card px-4 py-3 md:rounded-none md:border-x-0 md:border-t-0 md:bg-transparent">
+          <div className="h-3 w-16 animate-pulse rounded bg-accent" />
+          <div className="mt-2 h-4 w-2/3 max-w-full animate-pulse rounded bg-accent" />
+          <div className="mt-3 h-3 w-24 animate-pulse rounded bg-accent" />
+          <div className="mt-2 h-4 w-full animate-pulse rounded bg-accent" />
         </div>
       ))}
     </div>
