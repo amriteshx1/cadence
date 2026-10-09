@@ -48,6 +48,10 @@ body,
   min-height: 100%;
 }
 
+html {
+  color-scheme: dark;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
@@ -64,4 +68,16 @@ body {
 
 * {
   box-sizing: border-box;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f2f2f2;
+  caret-color: #f2f2f2;
+  box-shadow: 0 0 0 1000px #060606 inset;
+  transition: background-color 99999s ease-out;
 }
