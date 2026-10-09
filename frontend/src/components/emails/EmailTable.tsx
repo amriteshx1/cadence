@@ -19,7 +19,8 @@ export function EmailTable({ items, mode }: { items: EmailItem[]; mode: Mode }) 
           <TableHeader>
             <TableRow>
               <TableHead className="w-[28%]">To</TableHead>
-              <TableHead className="w-40">Status</TableHead>
+              <TableHead className="w-36">Status</TableHead>
+              <TableHead className="w-44">{mode === "sent" ? "Sent" : "Scheduled"}</TableHead>
               <TableHead>Subject</TableHead>
               <TableHead className="w-28 text-right">Preview</TableHead>
             </TableRow>
@@ -29,8 +30,9 @@ export function EmailTable({ items, mode }: { items: EmailItem[]; mode: Mode }) 
               <TableRow key={item.id}>
                 <TableCell className="max-w-0 truncate font-medium">To: {item.toEmail}</TableCell>
                 <TableCell>
-                  <StatusBadge status={item.status} time={mode === "scheduled" ? item.scheduledAt : undefined} />
+                  <StatusBadge status={item.status} />
                 </TableCell>
+                <TableCell className="whitespace-nowrap text-sm text-muted">{timeStamp(item, mode)}</TableCell>
                 <TableCell className="max-w-0">
                   <div className="truncate">
                     <span className="font-semibold text-ink">{item.subject}</span>
@@ -50,13 +52,12 @@ export function EmailTable({ items, mode }: { items: EmailItem[]; mode: Mode }) 
 }
 
 function MobileEmailRow({ item, mode }: { item: EmailItem; mode: Mode }) {
-  const when = mode === "sent" ? item.sentAt ?? item.failedAt : null;
   return (
     <Card className="gap-0 py-0">
       <CardHeader className="pt-3">
         <div className="flex items-center justify-between gap-3">
           <p className="text-[11px] text-muted-foreground">To</p>
-          <StatusBadge status={item.status} time={mode === "scheduled" ? item.scheduledAt : undefined} />
+          <StatusBadge status={item.status} />
         </div>
         <p className="text-sm font-medium wrap-break-word">{item.toEmail}</p>
       </CardHeader>
@@ -65,14 +66,23 @@ function MobileEmailRow({ item, mode }: { item: EmailItem; mode: Mode }) {
         <p className="text-sm leading-snug font-medium text-ink">{item.subject}</p>
         {item.failureReason ? <p className="mt-1 text-sm text-danger">{item.failureReason}</p> : null}
       </CardContent>
-      {when || item.previewUrl ? (
-        <CardFooter className="justify-between">
-          <span className="text-xs text-muted-foreground">{when ? formatDateTime(when) : ""}</span>
-          {item.previewUrl ? <PreviewLink href={item.previewUrl} /> : <span />}
-        </CardFooter>
-      ) : null}
+      <CardFooter className="justify-between">
+        <span className="text-xs text-muted-foreground">{timeStamp(item, mode)}</span>
+        {item.previewUrl ? <PreviewLink href={item.previewUrl} /> : <span />}
+      </CardFooter>
     </Card>
   );
+}
+
+function timeStamp(item: EmailItem, mode: Mode): string {
+  if (mode === "scheduled") return formatDateTime(item.scheduledAt);
+  return sentStamp(item);
+}
+
+function sentStamp(item: EmailItem): string {
+  if (item.sentAt) return formatDateTime(item.sentAt);
+  if (item.status === "failed" && item.failedAt) return `Failed ${formatDateTime(item.failedAt)}`;
+  return "—";
 }
 
 function PreviewLink({ href }: { href: string }) {
