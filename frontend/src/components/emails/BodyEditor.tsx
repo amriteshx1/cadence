@@ -1,7 +1,21 @@
 import type { ReactNode } from "react";
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
+import {
+  Bold,
+  Heading2,
+  Italic,
+  List,
+  ListOrdered,
+  Redo2,
+  TextQuote,
+  Underline as UnderlineIcon,
+  Undo2,
+} from "lucide-react";
+import { Toggle } from "../ui/toggle";
+import { Button } from "../ui/Button";
 import "./compose-editor.css";
 
 type Props = {
@@ -18,6 +32,7 @@ export function BodyEditor({ value, onChange }: Props) {
         heading: { levels: [2] },
         codeBlock: false,
       }),
+      Underline,
       Placeholder.configure({ placeholder: "Body" }),
     ],
     content: value || "",
@@ -34,7 +49,7 @@ export function BodyEditor({ value, onChange }: Props) {
   if (!editor) {
     return (
       <div className="compose-body">
-        <div className="mx-auto h-10 w-68 rounded-full border border-line bg-page" />
+        <div className="mx-auto h-10 w-full max-w-md rounded-full border border-line bg-page" />
         <div className="mt-3 min-h-65" />
       </div>
     );
@@ -52,75 +67,67 @@ export function BodyEditor({ value, onChange }: Props) {
 
 function EditorToolbar({ editor }: { editor: Editor }) {
   return (
-    <div className="mx-auto flex h-10 w-max items-center gap-3 rounded-full border border-line bg-page px-4 text-muted">
-      <ToolButton
-        label="Bold"
-        active={editor.isActive("bold")}
-        onClick={() => editor.chain().focus().toggleBold().run()}
-      >
-        <ToolGlyph d="M7 8v8M7 8h4.5a2.5 2.5 0 0 1 0 5H7" />
-      </ToolButton>
-      <ToolButton
-        label="Undo"
-        active={false}
-        onClick={() => editor.chain().focus().undo().run()}
-      >
-        <ToolGlyph d="M4 12h6M14 12h6M8 8l-4 4 4 4M16 8l4 4-4 4" />
-      </ToolButton>
-      <ToolButton
+    <div className="mx-auto flex w-full max-w-xl flex-wrap items-center justify-center gap-0.5 rounded-full border border-line bg-page px-2 py-1 text-muted">
+      <ActionButton label="Undo" disabled={!editor.can().undo()} onClick={() => editor.chain().focus().undo().run()}>
+        <Undo2 className="size-3.5" />
+      </ActionButton>
+      <ActionButton label="Redo" disabled={!editor.can().redo()} onClick={() => editor.chain().focus().redo().run()}>
+        <Redo2 className="size-3.5" />
+      </ActionButton>
+      <FormatButton
         label="Heading"
         active={editor.isActive("heading", { level: 2 })}
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
       >
-        <span className="text-xs font-semibold">Tt</span>
-      </ToolButton>
-      <ToolButton
+        <Heading2 className="size-3.5" />
+      </FormatButton>
+      <FormatButton
         label="Bold"
         active={editor.isActive("bold")}
         onClick={() => editor.chain().focus().toggleBold().run()}
       >
-        <span className="text-sm font-bold">B</span>
-      </ToolButton>
-      <ToolButton
+        <Bold className="size-3.5" />
+      </FormatButton>
+      <FormatButton
         label="Italic"
         active={editor.isActive("italic")}
         onClick={() => editor.chain().focus().toggleItalic().run()}
       >
-        <span className="text-sm italic">I</span>
-      </ToolButton>
-      <ToolButton
+        <Italic className="size-3.5" />
+      </FormatButton>
+      <FormatButton
         label="Underline"
         active={editor.isActive("underline")}
         onClick={() => editor.chain().focus().toggleUnderline().run()}
       >
-        <span className="text-sm underline">U</span>
-      </ToolButton>
-      <ToolButton
+        <UnderlineIcon className="size-3.5" />
+      </FormatButton>
+      <FormatButton
         label="Numbered list"
         active={editor.isActive("orderedList")}
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
       >
-        <ToolGlyph d="M4 6h16M4 12h10M4 18h14" />
-      </ToolButton>
-      <ToolButton
+        <ListOrdered className="size-3.5" />
+      </FormatButton>
+      <FormatButton
         label="Bullet list"
         active={editor.isActive("bulletList")}
         onClick={() => editor.chain().focus().toggleBulletList().run()}
       >
-        <ToolGlyph d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" />
-      </ToolButton>
-      <ToolButton
+        <List className="size-3.5" />
+      </FormatButton>
+      <FormatButton
         label="Quote"
         active={editor.isActive("blockquote")}
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
       >
-        <ToolGlyph d="M8 8h12M8 16h12M4 8v8" />
-      </ToolButton>
+        <TextQuote className="size-3.5" />
+      </FormatButton>
     </div>
   );
 }
 
-function ToolButton({
+function FormatButton({
   label,
   active,
   onClick,
@@ -132,26 +139,40 @@ function ToolButton({
   children: ReactNode;
 }) {
   return (
-    <button
-      type="button"
-      title={label}
+    <Toggle
+      pressed={active}
       aria-label={label}
-      aria-pressed={active}
+      title={label}
       onMouseDown={(e) => e.preventDefault()}
-      onClick={onClick}
-      className={`flex items-center justify-center ${
-        active ? "text-brand" : "text-muted hover:text-ink"
-      }`}
+      onPressedChange={onClick}
     >
       {children}
-    </button>
+    </Toggle>
   );
 }
 
-function ToolGlyph({ d }: { d: string }) {
+function ActionButton({
+  label,
+  disabled,
+  onClick,
+  children,
+}: {
+  label: string;
+  disabled: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d={d} />
-    </svg>
+    <Button
+      variant="ghost"
+      className="!size-8 !px-0 text-muted hover:text-ink"
+      aria-label={label}
+      title={label}
+      disabled={disabled}
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={onClick}
+    >
+      {children}
+    </Button>
   );
 }
