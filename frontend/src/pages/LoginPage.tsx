@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { googleLoginUrl } from "../lib/api";
 import { Wordmark } from "../components/brand/Wordmark";
+import { Button } from "../components/ui/Button";
 import { GoogleIcon } from "../components/ui/Icons";
 import { LoginTrace } from "./systemVisuals";
 import "./public.css";
@@ -44,15 +45,16 @@ export function LoginPage({ backendDown }: { backendDown?: boolean }) {
               The server is not responding. Try again in a moment.
             </p>
           ) : null}
-          <button
+          <Button
             type="button"
+            variant="google"
+            className="mt-6 h-12 w-full border border-brand"
             onClick={startGoogle}
             disabled={signingIn || backendDown}
-            className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-brand bg-white text-sm font-medium text-page hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
             <GoogleIcon />
             {signingIn ? "Continuing…" : "Continue with Google"}
-          </button>
+          </Button>
         </div>
       </main>
     </div>
