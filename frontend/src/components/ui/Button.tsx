@@ -1,4 +1,4 @@
-import { type ButtonHTMLAttributes } from "react";
+import { forwardRef, type ButtonHTMLAttributes } from "react";
 
 type Variant = "primary" | "secondary" | "outline" | "ghost" | "google" | "danger";
 
@@ -17,14 +17,10 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   pill?: boolean;
 };
 
-export function Button({
-  variant = "primary",
-  size = "md",
-  pill = false,
-  className = "",
-  type = "button",
-  ...props
-}: Props) {
+export const Button = forwardRef<HTMLButtonElement, Props>(function Button(
+  { variant = "primary", size = "md", pill = false, className = "", type = "button", ...props },
+  ref,
+) {
   const sizing =
     size === "sm"
       ? "h-8 px-3 text-xs"
@@ -33,9 +29,10 @@ export function Button({
         : "h-10 px-4 text-sm";
   return (
     <button
+      ref={ref}
       type={type}
       className={`inline-flex items-center justify-center gap-2 font-medium transition disabled:cursor-not-allowed ${pill ? "rounded-full" : "rounded-lg"} ${sizing} ${variants[variant]} ${className}`}
       {...props}
     />
   );
-}
+});
